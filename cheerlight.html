@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheerlight</title>
+  <script>
+function setColor(data) {
+  let timestamp = data['created_at'];
+  document.querySelector('body').style.backgroundColor = data['field2'];
+  document.querySelector('output').innerHTML = `<p>Last set at <time datetime="${ timestamp }">${ timestamp }</time>.</p>`;
+}
+
+function fetchColor() {
+  fetch('https://api.thingspeak.com/channels/1417/field/2/last.json')
+    .then(response => response.json())
+    .then(data => setColor(data));
+}
+fetchColor();
+  </script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+  </style>
+</head>
+
+<body>
+
+<main>
+<h1>Cheerlight</h1>
+
+<output></output>
+</main>
+
+</body>
+
+</html>
