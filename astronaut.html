@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People in Space</title>
+  <script>
+function displayNames(data) {
+  let output = document.querySelector('#astronauts');
+
+  output.innerHTML = '';
+  for (let person of data['people']) {
+    let item = document.createElement('li');
+    item.appendChild(document.createTextNode(`${ person['name'] } on ${ person['craft'] }`));
+    output.appendChild(item);
+  }
+}
+
+function displayISS(data) {
+  let output = document.querySelector('#iss'),
+      timestamp = new Date(data['timestamp'] * 1000);
+
+  output.innerHTML = `<p>Latitude: ${ data['iss_position']['latitude'] }<br>Longitude: ${ data['iss_position']['longitude'] }<br>at ${ timestamp.toISOString() }</p>`;
+}
+
+function fetchData() {
+  fetch('http://api.open-notify.org/astros.json')
+    .then(response => response.json())
+    .then(data => displayNames(data));
+  fetch('http://api.open-notify.org/iss-now.json')
+    .then(response => response.json())
+    .then(data => displayISS(data));
+}
+fetchData();
+  </script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+  </style>
+</head>
+
+<body>
+
+<main>
+<h1>People in Space</h1>
+
+<ol id="astronauts"></ol>
+
+<h2>ISS Location</h2>
+
+<output id="iss"></output>
+</main>
+
+</body>
+
+</html>
