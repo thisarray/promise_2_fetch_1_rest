@@ -29,31 +29,40 @@ output {
 <script>
 const OUTPUT = document.querySelector('#marble');
 
-function getLatest(data) {
+function getLatest(data, count = 1) {
+  if (typeof count !== 'number') {
+    count = 1;
+  }
+  if (count <= 0) {
+    count = 1;
+  }
+
   let result = [];
   for (let imagery of data) {
     result.push([new Date(imagery['date'].replace(' ', 'T') + 'Z'), imagery['image']]);
   }
   result.sort();
+  result = result.slice(-Math.floor(count));
 
-  let [date, filename] = result[result.length-1],
-      // Get the year, month, and day from the filename due to timezone differences
-      timestampStart = filename.indexOf('20'),
-      year = filename.substring(timestampStart, timestampStart + 4),
-      month = filename.substring(timestampStart + 4, timestampStart + 6),
-      day = filename.substring(timestampStart + 6, timestampStart + 8),
-      image = document.createElement('img');
-  image.src = `https://epic.gsfc.nasa.gov/archive/natural/${ year }/${ month }/${ day }/jpg/${ filename }.jpg`;
-  image.alt = 'Imagery from the Earth Polychromatic Imaging Camera (EPIC) instrument positioned at the Earth-Sun Lagrange point.';
-  OUTPUT.appendChild(image);
+  for (let [date, filename] of result) {
+    // Get the year, month, and day from the filename due to timezone differences
+    let timestampStart = filename.indexOf('20'),
+        year = filename.substring(timestampStart, timestampStart + 4),
+        month = filename.substring(timestampStart + 4, timestampStart + 6),
+        day = filename.substring(timestampStart + 6, timestampStart + 8),
+        image = document.createElement('img');
+    image.src = `https://epic.gsfc.nasa.gov/archive/natural/${ year }/${ month }/${ day }/jpg/${ filename }.jpg`;
+    image.alt = 'Imagery from the Earth Polychromatic Imaging Camera (EPIC) instrument positioned at the Earth-Sun Lagrange point.';
+    OUTPUT.appendChild(image);
+  }
 }
 
-function fetchData() {
+function fetchData(count) {
   fetch('https://epic.gsfc.nasa.gov/api/natural')
     .then(response => response.json())
-    .then(data => getLatest(data));
+    .then(data => getLatest(data, count));
 }
-fetchData();
+fetchData(1);
 </script>
 </body>
 
