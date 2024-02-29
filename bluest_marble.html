@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EPIC Daily Blue Marble</title>
+  <style type="text/css" media="screen">
+body {
+  background-color: black;
+  color: white;
+}
+.hidden {
+  display: none;
+}
+output {
+  display: block;
+}
+  </style>
+</head>
+
+<body>
+
+<main>
+<h1>EPIC Daily Blue Marble</h1>
+
+<p>Imagery from the Earth Polychromatic Imaging Camera (EPIC) instrument positioned at the Earth-Sun Lagrange point.</p>
+
+<output id="marble"></output>
+</main>
+
+<script>
+const OUTPUT = document.querySelector('#marble');
+
+let index = 0,
+    count = 0;
+
+function getLatest(data) {
+  let result = [];
+  for (let imagery of data) {
+    result.push([new Date(imagery['date'].replace(' ', 'T') + 'Z'), imagery['image']]);
+  }
+  result.sort();
+
+  count = result.length;
+
+  for (let [date, filename] of result) {
+    // Get the year, month, and day from the filename due to timezone differences
+    let timestampStart = filename.indexOf('20'),
+        year = filename.substring(timestampStart, timestampStart + 4),
+        month = filename.substring(timestampStart + 4, timestampStart + 6),
+        day = filename.substring(timestampStart + 6, timestampStart + 8),
+        image = document.createElement('img');
+    image.src = `https://epic.gsfc.nasa.gov/archive/natural/${ year }/${ month }/${ day }/jpg/${ filename }.jpg`;
+    image.alt = 'Imagery from the Earth Polychromatic Imaging Camera (EPIC) instrument positioned at the Earth-Sun Lagrange point.';
+    image.classList.add('hidden');
+    OUTPUT.appendChild(image);
+  }
+
+  if (count > 0) {
+    let images = OUTPUT.querySelectorAll('img');
+    images[index].classList.remove('hidden');
+
+    setInterval(advance, 500);
+  }
+}
+
+function advance() {
+  if (count <= 0) {
+    return;
+  }
+
+  let images = OUTPUT.querySelectorAll('img');
+  images[index].classList.add('hidden');
+  if ((images.length - 1) <= index) {
+    index = 0;
+  }
+  else {
+    index++;
+  }
+  images[index].classList.remove('hidden');
+}
+
+function fetchData() {
+  fetch('https://epic.gsfc.nasa.gov/api/natural')
+    .then(response => response.json())
+    .then(data => getLatest(data));
+}
+fetchData();
+</script>
+</body>
+
+</html>
