@@ -82,10 +82,7 @@ function getLatest(data) {
 document.querySelector('#previous').addEventListener('click', (event) => {
   if (count > 0) {
     let images = OUTPUT.querySelectorAll('img');
-    for (let image of images) {
-      image.classList.add('hidden');
-    }
-
+    images[index].classList.add('hidden');
     if (index <= 0) {
       index = images.length - 1;
     }
@@ -102,10 +99,7 @@ document.querySelector('#previous').addEventListener('click', (event) => {
 document.querySelector('#next').addEventListener('click', (event) => {
   if (count > 0) {
     let images = OUTPUT.querySelectorAll('img');
-    for (let image of images) {
-      image.classList.add('hidden');
-    }
-
+    images[index].classList.add('hidden');
     if ((images.length - 1) <= index) {
       index = 0;
     }
